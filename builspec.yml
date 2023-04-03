@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      # Install Docker
+      - apt-get update
+      - apt-get -y install docker.io
+      
+      # Log in to Docker registry (if necessary)
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 339146391262.dkr.ecr.ap-south-1.amazonaws.com
+      
+  build:
+    commands:
+      # Pull the openjdk:8-jdk-alpine image
+      - docker pull openjdk:8-jdk-alpine
+      
+      # Build the Docker image
+      - docker build -t openjdk:8-jdk-alpine .
+      - docker tag  openjdk:8-jdk-alpine 339146391262.dkr.ecr.ap-south-1.amazonaws.com/jdk-alpine:8
+      
+  post_build:
+    commands:
+      # Push the Docker image to the registry (if necessary)
+      - docker push 339146391262.dkr.ecr.ap-south-1.amazonaws.com/jdk-alpine:8
